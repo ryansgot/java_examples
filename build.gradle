@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+}
+
+plugins {
+    id 'org.inferred.processors' version '1.2.1'
+}
+
+apply plugin: 'java'
+
+group 'com.fsryan.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+repositories {
+    jcenter()
+    maven {
+        url 'http://projectlombok.org/mavenrepo'
+    }
+}
+
+dependencies {
+
+    compile 'com.google.guava:guava:19.0'
+
+    processor 'org.projectlombok:lombok:1.16.6'
+
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'junit:junit:4.12'
+}
