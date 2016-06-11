@@ -112,9 +112,9 @@ public abstract class SuggesterTest {
                             Lists.newArrayList("a", "aa", "aaron")
                     },
                     {   // 06: all resuls matching "a" when inputs have word starting with "b"
-                            Lists.newArrayList("a", "aa", "aaron", "b"),
+                            Lists.newArrayList("a", "aa", "aardvark", "aaron", "b"),
                             "a",
-                            Lists.newArrayList("a", "aa", "aaron")
+                            Lists.newArrayList("a", "aa", "aardvark", "aaron")
                     },
                     {   // 07: Large input with one letter least common
                             allWords(),
