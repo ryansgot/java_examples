@@ -1,3 +1,2 @@
-include ':suggestion'
-include 'suggesterfx'
+include ':suggestion', 'suggesterfx'
 
