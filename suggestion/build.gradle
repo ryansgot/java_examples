@@ -1,8 +1,6 @@
 apply plugin: 'java'
 apply plugin: "jacoco"
-
-group 'com.fsryan.example'
-version '1.0-SNAPSHOT'
+apply plugin: 'maven'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -40,5 +38,14 @@ task jacocoReport(type: JacocoReport, dependsOn: 'test') {
         xml.enabled false
         csv.enabled false
         html.enabled = true
+    }
+}
+
+group 'com.fsryan.example'
+version '1.0-SNAPSHOT'
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.artifactId = 'suggestions'
     }
 }
