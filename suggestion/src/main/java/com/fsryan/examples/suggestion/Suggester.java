@@ -27,7 +27,7 @@ public class Suggester implements Iterable<String> {
 
     /**
      * <p>
-     *     Makes suggestions based upon the words that have been added to the suggester
+     *     Makes suggestions based upon the words that have been added to the suggestions
      * </p>
      * @param prefix the starting characters which narrow down the returned results
      * @return A list of suggestions that start with the prefix entered

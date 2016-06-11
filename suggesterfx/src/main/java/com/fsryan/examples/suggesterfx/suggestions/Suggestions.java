@@ -1,4 +1,4 @@
-package com.fsryan.examples.suggesterfx.suggester;
+package com.fsryan.examples.suggesterfx.suggestions;
 
 import java.util.List;
 import com.fsryan.examples.suggestion.Suggester;
@@ -12,6 +12,7 @@ public interface Suggestions {
 
     interface Presenter {
         void onEntryTextFocus(String currentText);
+        void onEntryTextFocusLost();
         void onEntryTextChanged(String currentText);
     }
 
