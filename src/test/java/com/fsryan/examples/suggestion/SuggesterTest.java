@@ -68,6 +68,7 @@ public abstract class SuggesterTest {
     @RunWith(Parameterized.class)
     public static class SuggestionFromIndex extends SuggesterTest {
 
+        private Suggester suggesterUnderTest;
         private final String prefix;
         private final List<String> expectedSuggestions;
 
@@ -138,9 +139,15 @@ public abstract class SuggesterTest {
             });
         }
 
+        @Before
+        public void setUp() {
+            suggesterUnderTest = new Suggester();
+            suggesterUnderTest.reinit(initWords);
+        }
+
         @Test
         public void shouldHaveCorrectSuggestions() {
-            Iterator<String> actualSuggesitonIterator = new Suggester(initWords).suggest(prefix).iterator();
+            Iterator<String> actualSuggesitonIterator = suggesterUnderTest.suggest(prefix).iterator();
             Iterator<String> expectedSuggestionIterator = expectedSuggestions.iterator();
 
             int pos = 0;
@@ -154,6 +161,12 @@ public abstract class SuggesterTest {
 
             final boolean extraElements = actualSuggesitonIterator.hasNext();
             assertFalse("had extra elements: " + itToStr(actualSuggesitonIterator), extraElements);
+        }
+
+        @Test
+        public void shouldReturnNoResultsAfterClear() {
+            suggesterUnderTest.clear();
+            assertEquals(0, suggesterUnderTest.suggest(prefix).size());
         }
 
         private String itToStr(Iterator<String> it) {
