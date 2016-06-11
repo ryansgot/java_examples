@@ -11,7 +11,7 @@ public class Suggester implements Iterable<String> {
     private final Node root = new Node((char) 0);
 
     public Suggester() {
-        this(new ArrayList<String>());
+        this(null);
     }
 
     public Suggester(List<String> initWords) {
@@ -20,7 +20,7 @@ public class Suggester implements Iterable<String> {
 
     public void reinit(List<String> initWords) {
         clear();
-        for (String word : initWords) {
+        for (String word : initWords == null ? new ArrayList<String>() : initWords) {
             addWordToSuggestions(word);
         }
     }
