@@ -1,12 +1,7 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
     }
-}
-
-plugins {
-    id 'org.inferred.processors' version '1.2.1'
 }
 
 apply plugin: 'java'
@@ -27,8 +22,6 @@ repositories {
 dependencies {
 
     compile 'com.google.guava:guava:19.0'
-
-    processor 'org.projectlombok:lombok:1.16.6'
 
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'junit:junit:4.12'
