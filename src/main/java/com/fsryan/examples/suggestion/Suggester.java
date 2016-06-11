@@ -29,7 +29,7 @@ public class Suggester implements Iterable<String> {
      * <p>
      *     Makes suggestions based upon the words that have been added to the suggester
      * </p>
-     * @param prefix
+     * @param prefix the starting characters which narrow down the returned results
      * @return A list of suggestions that start with the prefix entered
      */
     public List<String> suggest(String prefix) {
@@ -52,7 +52,7 @@ public class Suggester implements Iterable<String> {
         }
 
         List<String> ret = new ArrayList<>();
-        if (current.isSuggestion()) {
+        if (current.isSuggestion()) {   // <-- must add current buffer if the prefix is also a word
             ret.add(buf.toString());
         }
         ret.addAll(suggestInternal(current, buf));
