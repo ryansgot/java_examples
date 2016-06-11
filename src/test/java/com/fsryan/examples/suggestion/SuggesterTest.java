@@ -58,6 +58,11 @@ public abstract class SuggesterTest {
             assertFalse("unexpected continuation of actual = " + pos, actualIterator.hasNext());
             assertTrue("Actual did not contain words: " + expectedSet.toString(), expectedSet.isEmpty());
         }
+
+        @Test
+        public void suggesterShouldBeOfSameSizeAsInputWhenWordsDifferent() {
+            assertEquals(initWords.size(), suggesterUnderTest.size());
+        }
     }
 
     @RunWith(Parameterized.class)

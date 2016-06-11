@@ -25,6 +25,13 @@ public class Suggester implements Iterable<String> {
         }
     }
 
+    /**
+     * <p>
+     *     Makes suggestions based upon the words that have been added to the suggester
+     * </p>
+     * @param prefix
+     * @return A list of suggestions that start with the prefix entered
+     */
     public List<String> suggest(String prefix) {
         if (prefix == null || prefix.length() == 0) {
             return Collections.emptyList();
@@ -49,19 +56,6 @@ public class Suggester implements Iterable<String> {
             ret.add(buf.toString());
         }
         ret.addAll(suggestInternal(current, buf));
-        return ret;
-    }
-
-    private List<String> suggestInternal(Node current, StringBuffer buf) {
-        List<String> ret = new ArrayList<>();
-        for (Node child : current.getChildren()) {
-            buf.append(child.getC());
-            if (child.isSuggestion()) {
-                ret.add(buf.toString());
-            }
-            ret.addAll(suggestInternal(child, buf));
-            buf.delete(buf.length() - 1, buf.length());
-        }
         return ret;
     }
 
@@ -94,5 +88,18 @@ public class Suggester implements Iterable<String> {
             idx++;
         }
         size++;
+    }
+
+    private List<String> suggestInternal(Node current, StringBuffer buf) {
+        List<String> ret = new ArrayList<>();
+        for (Node child : current.getChildren()) {
+            buf.append(child.getC());
+            if (child.isSuggestion()) {
+                ret.add(buf.toString());
+            }
+            ret.addAll(suggestInternal(child, buf));
+            buf.delete(buf.length() - 1, buf.length());
+        }
+        return ret;
     }
 }
