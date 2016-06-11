@@ -1,8 +1,7 @@
 package com.fsryan.examples.suggesterfx;
 
+import com.fsryan.examples.suggesterfx.suggestions.ViewContainer;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -14,10 +13,8 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Suggestions FX");
 
-
-        StackPane layout = new StackPane();
-        Scene scene = new Scene(layout, 300D, 200D);
-        primaryStage.setScene(scene);
+        ViewContainer viewContainer = new ViewContainer();
+        primaryStage.setScene(viewContainer.getScene());
         primaryStage.show();
     }
 }

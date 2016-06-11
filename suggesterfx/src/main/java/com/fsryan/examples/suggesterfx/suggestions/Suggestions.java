@@ -3,7 +3,7 @@ package com.fsryan.examples.suggesterfx.suggestions;
 import java.util.List;
 import com.fsryan.examples.suggestion.Suggester;
 
-public interface Suggestions {
+/*package*/ interface Suggestions {
     interface View {
         void showSuggestions(List<String> suggestions);
         void showNoSuggestions();
