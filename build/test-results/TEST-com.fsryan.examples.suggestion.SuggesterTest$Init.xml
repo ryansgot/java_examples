@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.fsryan.examples.suggestion.SuggesterTest$Init" tests="2" skipped="0" failures="0" errors="0" timestamp="2016-06-11T05:29:54" hostname="rydora" time="0.18">
-  <properties/>
-  <testcase name="allWordsShouldBeRepresented[0]" classname="com.fsryan.examples.suggestion.SuggesterTest$Init" time="0.001"/>
-  <testcase name="allWordsShouldBeRepresented[1]" classname="com.fsryan.examples.suggestion.SuggesterTest$Init" time="0.179"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
