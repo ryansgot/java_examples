@@ -1,12 +1,9 @@
 package com.fsryan.examples.suggestion;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@VisibleForTesting
 /*package*/ class Node implements Comparable<Node> {
 
     private final char c;

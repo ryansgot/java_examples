@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 public class Suggester implements Iterable<String> {
 
     private int size = 0;
@@ -28,7 +26,7 @@ public class Suggester implements Iterable<String> {
     }
 
     public List<String> suggest(String prefix) {
-        if (isNullOrEmpty(prefix)) {
+        if (prefix == null || prefix.length() == 0) {
             return Collections.emptyList();
         }
 
