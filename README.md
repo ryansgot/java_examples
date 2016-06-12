@@ -25,3 +25,6 @@ Usage (from the project's base directory):
 ```
 $> ./gradlew :suggesterfx:run
 ```
+Example:
+
+![Screenshot](https://github.com/ryansgot/java_examples/blob/master/suggesterfx/readme_images/sample.png)
