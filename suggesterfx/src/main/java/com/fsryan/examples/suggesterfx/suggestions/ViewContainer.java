@@ -44,6 +44,9 @@ public class ViewContainer implements Suggestions.View {
         if (suggestions.size() < MAX_SUGGESTION_ROWS)  {
             suggestionComboBox.hide();
             suggestionComboBox.setVisibleRowCount(suggestions.size());
+        } else if (suggestionComboBox.getVisibleRowCount() < MAX_SUGGESTION_ROWS) {
+            suggestionComboBox.hide();
+            suggestionComboBox.setVisibleRowCount(MAX_SUGGESTION_ROWS);
         }
 
         suggestionComboBox.getItems().addAll(suggestions);
@@ -54,6 +57,11 @@ public class ViewContainer implements Suggestions.View {
     public void showNoSuggestions() {
         System.out.println("showNoSuggestions()");
         suggestionComboBox.hide();
+    }
+
+    @Override
+    public void showError(String message) {
+        System.out.println("showError(" + message + ")");
     }
 
     @Override

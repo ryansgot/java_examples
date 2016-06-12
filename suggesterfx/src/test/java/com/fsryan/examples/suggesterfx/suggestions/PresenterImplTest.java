@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,12 +30,17 @@ public abstract class PresenterImplTest {
         mockModel = mock(Suggestions.Model.class);
         Suggester mockSuggester = mock(Suggester.class);
         when(mockSuggester.suggest(any(String.class))).thenReturn(wordsToSuggest());
-        when (mockModel.getSuggester()).thenReturn(mockSuggester);
 
         presenterUnderTest = new PresenterImpl(mockView, mockModel);
+
+        // handle the suggester load
+        ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterloadedCaptor = ArgumentCaptor.forClass(Suggestions.Model.OnSuggesterLoadedListener.class);
+        verify(mockModel, times(1)).loadSuggester(suggesterloadedCaptor.capture());
+        handleSuggesterLoad(suggesterloadedCaptor, mockSuggester);
     }
 
     protected abstract List<String> wordsToSuggest();
+    protected abstract void handleSuggesterLoad(ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterLoadedCaptor, Suggester mockSuggester);
 
     protected Suggestions.Presenter presenterUnderTest() {
         return presenterUnderTest;
@@ -144,6 +150,11 @@ public abstract class PresenterImplTest {
         protected List<String> wordsToSuggest() {
             return wordsToSuggest;
         }
+
+        @Override
+        protected void handleSuggesterLoad(ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterLoadedCaptor, Suggester mockSuggester) {
+            suggesterLoadedCaptor.getValue().onSuccess(mockSuggester);
+        }
     }
 
     public static class ClearSuggestions extends PresenterImplTest {
@@ -163,6 +174,44 @@ public abstract class PresenterImplTest {
         @Override
         protected List<String> wordsToSuggest() {
             return Collections.emptyList();
+        }
+
+        @Override
+        protected void handleSuggesterLoad(ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterLoadedCaptor, Suggester mockSuggester) {
+            suggesterLoadedCaptor.getValue().onSuccess(mockSuggester);
+        }
+    }
+
+    @RunWith(Parameterized.class)
+    public static class SuggesterLoadFailure extends PresenterImplTest {
+
+        private final String exceptionMessage;
+
+        public SuggesterLoadFailure(String exceptionMessage) {
+            this.exceptionMessage = exceptionMessage;
+        }
+
+        @Parameterized.Parameters
+        public static Iterable<Object[]> data() {
+            return Arrays.asList(new Object[][] {
+                    {"Some exception messsage"},
+                    {"Some other exception messsage"},
+            });
+        }
+
+        @Test
+        public void shouldCallViewShowErrorMethodWhenSuggesterLoadFails() {
+            verify(mockView(), times(1)).showError(eq(exceptionMessage));
+        }
+
+        @Override
+        protected List<String> wordsToSuggest() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        protected void handleSuggesterLoad(ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterLoadedCaptor, Suggester mockSuggester) {
+            suggesterLoadedCaptor.getValue().onFailure(new Exception(exceptionMessage));
         }
     }
 }

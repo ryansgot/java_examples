@@ -7,6 +7,7 @@ import com.fsryan.examples.suggestion.Suggester;
     interface View {
         void showSuggestions(List<String> suggestions);
         void showNoSuggestions();
+        void showError(String message);
         void clearSuggestions();
     }
 
@@ -18,6 +19,17 @@ import com.fsryan.examples.suggestion.Suggester;
     }
 
     interface Model {
-        Suggester getSuggester();
+
+        interface OnSuggesterLoadedListener {
+            void onSuccess(Suggester suggester);
+            void onFailure(Throwable t);
+
+            OnSuggesterLoadedListener NOOP = new OnSuggesterLoadedListener() {
+                public void onSuccess(Suggester suggester) {}
+                public void onFailure(Throwable t) {}
+            };
+        }
+
+        void loadSuggester(OnSuggesterLoadedListener listener);
     }
 }

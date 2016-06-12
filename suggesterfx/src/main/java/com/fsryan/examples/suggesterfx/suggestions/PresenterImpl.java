@@ -4,16 +4,34 @@ import com.fsryan.examples.suggestion.Suggester;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /*package*/ class PresenterImpl implements Suggestions.Presenter {
+
+    private static final int REQUEST_CAPACITY = 1;
+
+    private final ArrayBlockingQueue<Request> requests = new ArrayBlockingQueue<>(REQUEST_CAPACITY);
 
     private final Suggestions.View view;
     private Suggester suggester;
 
     public PresenterImpl(Suggestions.View view, Suggestions.Model model) {
         this.view = view;
-        suggester = model == null ? new Suggester() : model.getSuggester();
-        suggester = suggester == null ? new Suggester() : suggester;
+        model.loadSuggester(new Suggestions.Model.OnSuggesterLoadedListener() {
+            @Override
+            public void onSuccess(Suggester suggester) {
+                setSuggester(suggester);
+                while (!requests.isEmpty()) {   // <-- when suggester is loaded, perform the enqueued requests
+                    requests.remove().perform();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                PresenterImpl.this.view.showError(t.getMessage());
+                setSuggester(new Suggester());
+            }
+        });
     }
 
     @Override
@@ -37,7 +55,7 @@ import java.util.List;
     }
 
     private void handleTextChange(String currentText) {
-        List<String> suggestions = getSuggestions(currentText);
+        List<String> suggestions = getSuggestions(currentText, true);
         if (suggestions == null || suggestions.isEmpty()) {
             view.showNoSuggestions();
         } else {
@@ -45,7 +63,46 @@ import java.util.List;
         }
     }
 
-    private List<String> getSuggestions(String prefix) {
-        return prefix == null || prefix.length() == 0 ? Collections.<String>emptyList() : suggester.suggest(prefix);
+    private List<String> getSuggestions(final String prefix, boolean enqueueIfNotLoaded) {
+        if (prefix == null || prefix.length() == 0) {
+            return Collections.emptyList();
+        }
+        Suggester s = getSuggester();
+        if (s == null) {
+            if (enqueueIfNotLoaded) {
+                enqueueRequest(new Request() {
+                    @Override
+                    public void perform() {
+                        getSuggestions(prefix, false);
+                    }
+                });
+            }
+            return Collections.emptyList();
+        } else {
+            return s.suggest(prefix);
+        }
+    }
+
+    private interface Request {
+        void perform();
+    }
+
+    private void enqueueRequest(Request request) {
+        while (requests.size() >= REQUEST_CAPACITY) {
+            requests.remove();
+        }
+        requests.add(request);
+    }
+
+    private void setSuggester(Suggester suggester) {
+        synchronized (this) {
+            this.suggester = suggester;
+        }
+    }
+
+    private Suggester getSuggester() {
+        synchronized (this) {
+            return suggester;
+        }
     }
 }

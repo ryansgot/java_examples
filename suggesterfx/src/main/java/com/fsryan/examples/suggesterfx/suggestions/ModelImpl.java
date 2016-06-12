@@ -10,32 +10,38 @@ import java.io.IOException;
 /*package*/ class ModelImpl implements Suggestions.Model {
 
     @Override
-    public Suggester getSuggester() {
-        Suggester ret = new Suggester();
-        BufferedReader reader = null;
-        try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            File file = new File(classLoader.getResource("all_words.txt").getFile());
-            reader = new BufferedReader(new FileReader(file));
-            String line = null;
-            while (null != (line = reader.readLine())) {
-                line = line.trim();
-                if (line.isEmpty()) {
-                    continue;
-                }
-                ret.addWordToSuggestions(line);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } finally {
-            if (reader != null) {
+    public void loadSuggester(final OnSuggesterLoadedListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Suggester suggester = new Suggester();
+                BufferedReader reader = null;
                 try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    ClassLoader classLoader = getClass().getClassLoader();
+                    File file = new File(classLoader.getResource("all_words.txt").getFile());
+                    reader = new BufferedReader(new FileReader(file));
+                    String line = null;
+                    while (null != (line = reader.readLine())) {
+                        line = line.trim();
+                        if (line.isEmpty()) {
+                            continue;
+                        }
+                        suggester.addWordToSuggestions(line);
+                    }
+                    listener.onSuccess(suggester);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                    listener.onFailure(ioe);
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
-        }
-        return ret;
+        }).start();
     }
 }
