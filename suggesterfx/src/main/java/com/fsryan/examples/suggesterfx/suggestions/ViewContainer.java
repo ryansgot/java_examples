@@ -29,8 +29,6 @@ public class ViewContainer implements Suggestions.View {
 
     @Override
     public void showSuggestions(final List<String> suggestions) {
-        suggestionComboBox.getItems().clear();
-
         // workaround for the fact that setVisibleRowCount does not invalidate view
         final int previousRows = Math.min(suggestionComboBox.getVisibleRowCount(), MAX_SUGGESTION_ROWS);
         final int newRows = Math.min(suggestions.size(), MAX_SUGGESTION_ROWS);
@@ -39,6 +37,7 @@ public class ViewContainer implements Suggestions.View {
             suggestionComboBox.setVisibleRowCount(newRows);
         }
 
+        suggestionComboBox.getItems().clear();
         suggestionComboBox.getItems().addAll(suggestions);
         suggestionComboBox.show();
     }
