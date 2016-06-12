@@ -82,19 +82,19 @@ import java.util.concurrent.*;
     private void setCurrentRequest(Callable<List<String>> callable) {
         if (currentFuture != null && !currentFuture.isDone()) {
             currentFuture.cancel(true);
-            System.out.println("Canceled current future");
         }
         currentFuture = executor.submit(callable);
+        List<String> suggestions = null;
         try {
-            List<String> suggestions = currentFuture.get(FUTURE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-            System.out.println("Received results on thread: " + Thread.currentThread().getName());
-            if (suggestions == null || suggestions.isEmpty()) {
-                view.showNoSuggestions();
-            } else {
-                view.showSuggestions(suggestions);
-            }
+            suggestions = currentFuture.get(FUTURE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (suggestions == null || suggestions.isEmpty()) {
+            view.showNoSuggestions();
+        } else {
+            view.showSuggestions(suggestions);
         }
     }
 
@@ -108,8 +108,6 @@ import java.util.concurrent.*;
 
         @Override
         public List<String> call() throws Exception {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("Running suggestion retriever on thread: " + threadName);
             if (getSuggester() == null) {
                 return Collections.emptyList();
             }

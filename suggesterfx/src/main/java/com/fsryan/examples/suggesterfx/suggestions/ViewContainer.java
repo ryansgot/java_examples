@@ -1,24 +1,16 @@
 package com.fsryan.examples.suggesterfx.suggestions;
 
-
-import com.fsryan.examples.suggestion.Suggester;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.SingleSelectionModel;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewContainer implements Suggestions.View {
@@ -37,16 +29,14 @@ public class ViewContainer implements Suggestions.View {
 
     @Override
     public void showSuggestions(final List<String> suggestions) {
-        System.out.println("showSuggestions(" + suggestions.toString() + ")");
         suggestionComboBox.getItems().clear();
 
         // workaround for the fact that setVisibleRowCount does not invalidate view
-        if (suggestions.size() < MAX_SUGGESTION_ROWS)  {
+        final int previousRows = Math.min(suggestionComboBox.getVisibleRowCount(), MAX_SUGGESTION_ROWS);
+        final int newRows = Math.min(suggestions.size(), MAX_SUGGESTION_ROWS);
+        if (previousRows != newRows)  {
             suggestionComboBox.hide();
-            suggestionComboBox.setVisibleRowCount(suggestions.size());
-        } else if (suggestionComboBox.getVisibleRowCount() < MAX_SUGGESTION_ROWS) {
-            suggestionComboBox.hide();
-            suggestionComboBox.setVisibleRowCount(MAX_SUGGESTION_ROWS);
+            suggestionComboBox.setVisibleRowCount(newRows);
         }
 
         suggestionComboBox.getItems().addAll(suggestions);
@@ -55,7 +45,6 @@ public class ViewContainer implements Suggestions.View {
 
     @Override
     public void showNoSuggestions() {
-        System.out.println("showNoSuggestions()");
         suggestionComboBox.hide();
     }
 
@@ -66,7 +55,6 @@ public class ViewContainer implements Suggestions.View {
 
     @Override
     public void clearSuggestions() {
-        System.out.println("clearSuggestions()");
         suggestionComboBox.hide();
     }
 
@@ -114,7 +102,6 @@ public class ViewContainer implements Suggestions.View {
     }
 
     public void onApplicationStop() {
-        System.out.println("Application Stop called");
         presenter.cleanUp();
     }
 }
