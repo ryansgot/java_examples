@@ -14,6 +14,7 @@ import java.io.IOException;
         new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println("Initializing Suggester on thread: " + Thread.currentThread().getName());
                 Suggester suggester = new Suggester();
                 BufferedReader reader = null;
                 try {

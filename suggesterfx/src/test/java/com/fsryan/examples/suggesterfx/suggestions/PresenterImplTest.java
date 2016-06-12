@@ -2,6 +2,7 @@ package com.fsryan.examples.suggesterfx.suggestions;
 
 import com.fsryan.examples.suggestion.Suggester;
 import com.google.common.collect.Lists;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,11 @@ public abstract class PresenterImplTest {
         ArgumentCaptor<Suggestions.Model.OnSuggesterLoadedListener> suggesterloadedCaptor = ArgumentCaptor.forClass(Suggestions.Model.OnSuggesterLoadedListener.class);
         verify(mockModel, times(1)).loadSuggester(suggesterloadedCaptor.capture());
         handleSuggesterLoad(suggesterloadedCaptor, mockSuggester);
+    }
+
+    @After
+    public void tearDown() {
+        presenterUnderTest.cleanUp();
     }
 
     protected abstract List<String> wordsToSuggest();
@@ -143,7 +149,7 @@ public abstract class PresenterImplTest {
         @Test
         public void shouldCallShowNoSuggestionsCorrectNumberOfTimesOnEntryTextChanged() {
             presenterUnderTest().onEntryTextChanged(inputPrefix);
-            verify(mockView(), times(showNoSuggestionsTimes)).showNoSuggestions();
+            verify(mockView(), times(showSuggestionsTimes)).showSuggestions(any(List.class));
         }
 
         @Override

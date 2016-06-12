@@ -4,16 +4,18 @@ import com.fsryan.examples.suggestion.Suggester;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.*;
 
 /*package*/ class PresenterImpl implements Suggestions.Presenter {
 
-    private static final int REQUEST_CAPACITY = 1;
+    private static final long FUTURE_TIMEOUT_MILLIS = 2500L;
 
-    private final ArrayBlockingQueue<Request> requests = new ArrayBlockingQueue<>(REQUEST_CAPACITY);
+    private Future<List<String>> currentFuture;
+
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private final Suggestions.View view;
-    private Suggester suggester;
+    private volatile Suggester suggester;
 
     public PresenterImpl(Suggestions.View view, Suggestions.Model model) {
         this.view = view;
@@ -21,9 +23,6 @@ import java.util.concurrent.ArrayBlockingQueue;
             @Override
             public void onSuccess(Suggester suggester) {
                 setSuggester(suggester);
-                while (!requests.isEmpty()) {   // <-- when suggester is loaded, perform the enqueued requests
-                    requests.remove().perform();
-                }
             }
 
             @Override
@@ -54,44 +53,18 @@ import java.util.concurrent.ArrayBlockingQueue;
         view.clearSuggestions();
     }
 
+    @Override
+    public void cleanUp() {
+        executor.shutdownNow();
+    }
+
     private void handleTextChange(String currentText) {
-        List<String> suggestions = getSuggestions(currentText, true);
-        if (suggestions == null || suggestions.isEmpty()) {
+        if (currentText == null || currentText.length() == 0) {
             view.showNoSuggestions();
-        } else {
-            view.showSuggestions(suggestions);
+            return;
         }
-    }
 
-    private List<String> getSuggestions(final String prefix, boolean enqueueIfNotLoaded) {
-        if (prefix == null || prefix.length() == 0) {
-            return Collections.emptyList();
-        }
-        Suggester s = getSuggester();
-        if (s == null) {
-            if (enqueueIfNotLoaded) {
-                enqueueRequest(new Request() {
-                    @Override
-                    public void perform() {
-                        getSuggestions(prefix, false);
-                    }
-                });
-            }
-            return Collections.emptyList();
-        } else {
-            return s.suggest(prefix);
-        }
-    }
-
-    private interface Request {
-        void perform();
-    }
-
-    private void enqueueRequest(Request request) {
-        while (requests.size() >= REQUEST_CAPACITY) {
-            requests.remove();
-        }
-        requests.add(request);
+        setCurrentRequest(new SuggestionRetriever(currentText));
     }
 
     private void setSuggester(Suggester suggester) {
@@ -103,6 +76,45 @@ import java.util.concurrent.ArrayBlockingQueue;
     private Suggester getSuggester() {
         synchronized (this) {
             return suggester;
+        }
+    }
+
+    private void setCurrentRequest(Callable<List<String>> callable) {
+        if (currentFuture != null && !currentFuture.isDone()) {
+            currentFuture.cancel(true);
+            System.out.println("Canceled current future");
+        }
+        currentFuture = executor.submit(callable);
+        try {
+            List<String> suggestions = currentFuture.get(FUTURE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+            System.out.println("Received results on thread: " + Thread.currentThread().getName());
+            if (suggestions == null || suggestions.isEmpty()) {
+                view.showNoSuggestions();
+            } else {
+                view.showSuggestions(suggestions);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class SuggestionRetriever implements Callable<List<String>> {
+
+        private final String prefix;
+
+        public SuggestionRetriever(String prefix) {
+            this.prefix = prefix;
+        }
+
+        @Override
+        public List<String> call() throws Exception {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Running suggestion retriever on thread: " + threadName);
+            if (getSuggester() == null) {
+                return Collections.emptyList();
+            }
+
+            return getSuggester().suggest(prefix);
         }
     }
 }

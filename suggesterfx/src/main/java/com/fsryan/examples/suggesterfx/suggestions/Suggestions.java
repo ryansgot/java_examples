@@ -16,6 +16,8 @@ import com.fsryan.examples.suggestion.Suggester;
         void onEntryTextFocusLost();
         void onEntryTextChanged(String currentText);
         void onTextSelected();
+
+        void cleanUp();
     }
 
     interface Model {

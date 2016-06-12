@@ -6,6 +6,8 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+    private ViewContainer viewContainer;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -13,8 +15,13 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Suggestions FX");
 
-        ViewContainer viewContainer = new ViewContainer();
+        viewContainer = new ViewContainer();
         primaryStage.setScene(viewContainer.getScene());
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() {
+        viewContainer.onApplicationStop();
     }
 }

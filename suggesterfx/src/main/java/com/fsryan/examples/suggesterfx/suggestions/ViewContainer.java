@@ -112,4 +112,9 @@ public class ViewContainer implements Suggestions.View {
 
         return new Scene(layout, 300D, 250D);
     }
+
+    public void onApplicationStop() {
+        System.out.println("Application Stop called");
+        presenter.cleanUp();
+    }
 }
