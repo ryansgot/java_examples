@@ -108,11 +108,12 @@ import java.util.concurrent.*;
 
         @Override
         public List<String> call() throws Exception {
-            if (getSuggester() == null) {
+            Suggester s = getSuggester();
+            if (s == null) {
                 return Collections.emptyList();
             }
 
-            return getSuggester().suggest(prefix);
+            return s.suggest(prefix);
         }
     }
 }

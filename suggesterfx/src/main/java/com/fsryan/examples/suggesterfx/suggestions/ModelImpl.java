@@ -17,8 +17,7 @@ import java.io.IOException;
                 Suggester suggester = new Suggester();
                 BufferedReader reader = null;
                 try {
-                    ClassLoader classLoader = getClass().getClassLoader();
-                    File file = new File(classLoader.getResource("all_words.txt").getFile());
+                    File file = new File(getClass().getClassLoader().getResource("all_words.txt").getFile());
                     reader = new BufferedReader(new FileReader(file));
                     String line = null;
                     while (null != (line = reader.readLine())) {
