@@ -31,6 +31,11 @@ import java.util.List;
         handleTextChange(currentText);
     }
 
+    @Override
+    public void onTextSelected() {
+        view.clearSuggestions();
+    }
+
     private void handleTextChange(String currentText) {
         List<String> suggestions = getSuggestions(currentText);
         if (suggestions == null || suggestions.isEmpty()) {

@@ -146,11 +146,17 @@ public abstract class PresenterImplTest {
         }
     }
 
-    public static class OnEntryTextFocusLost extends PresenterImplTest {
+    public static class ClearSuggestions extends PresenterImplTest {
 
         @Test
         public void shouldCallClearSuggestionsOnFocusLost() {
             presenterUnderTest().onEntryTextFocusLost();
+            verify(mockView(), times(1)).clearSuggestions();
+        }
+
+        @Test
+        public void shouldCallClearSuggestionsOnTextSelected() {
+            presenterUnderTest().onTextSelected();
             verify(mockView(), times(1)).clearSuggestions();
         }
 
